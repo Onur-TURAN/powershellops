@@ -32,9 +32,16 @@ foreach ($subnet in $subnets) {
             $pingStatus = "Ping is not reachable"
             $dnsStatus = "Dns is not reachable"
         }
+        
+        $results += [PSCustomObject]@{
+            IP = $ip
+            PingStatus = $pingStatus
+            DnsStatus = $dnsStatus
+        }
     }
 }
 
 # Export results to CSV
+
 $results | Export-Csv -Path $csvPath -NoTypeInformation
 Write-Host "Results exported to $csvPath"
