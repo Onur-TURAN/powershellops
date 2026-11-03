@@ -1,0 +1,25 @@
+name: PSScriptAnalyzer
+
+on:
+  push:
+    paths: ['**/*.ps1', 'PSScriptAnalyzerSettings.psd1', '.github/workflows/psscriptanalyzer.yml']
+  pull_request:
+    paths: ['**/*.ps1', 'PSScriptAnalyzerSettings.psd1']
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+
+      - name: Lint scripts
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
+          $results | Format-Table -AutoSize
+          if ($results | Where-Object Severity -eq 'Error') { exit 1 }

@@ -6,11 +6,11 @@ if (-NOT (Test-Path -Path $document_path)) {
     exit
 }
 
-$word.App = New-Object -ComObject Word.Application
-$word.App.Visible = $false
+$word = New-Object -ComObject Word.Application
+$word.Visible = $false
 
 try {
-    $document = $word.App.Documents.Open($file_path)
+    $document = $word.Documents.Open($file_path)
     $pdf_filename = Join-Path -Path $document_path -ChildPath 'GeneratedDocument.pdf'
     $document.SaveAs([ref] $pdf_filename, [ref] 17) # 17 is the enum for wdFormatPDF
     $document.Close()
@@ -19,8 +19,8 @@ try {
 } catch {
     Write-Host "Error: $_"
 } finally {
-    $word.App.Quit()
-    [System.Runtime.InteropServices.Marshal]::ReleaseComObject($word.App) | Out-Null
+    $word.Quit()
+    [System.Runtime.InteropServices.Marshal]::ReleaseComObject($word) | Out-Null
     [GC]::Collect()
     [GC]::WaitForPendingFinalizers()
 }
